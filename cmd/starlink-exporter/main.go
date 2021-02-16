@@ -359,7 +359,7 @@ func checkWifi() (string, bool, error) {
 }
 
 func checkDish() (string, bool, error) {
-	conn, err := grpc.Dial(wifiAddress, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(1*time.Second))
+	conn, err := grpc.Dial(dishAddress, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(1*time.Second))
 	if err != nil {
 		fmt.Println("[dish] could not connect:", err)
 		return "", false, err
