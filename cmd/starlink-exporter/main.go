@@ -439,6 +439,7 @@ func main() {
 		os.Exit(1)
 	}
 	m.Start()
+	fmt.Println("[starlink-exporter] your dish id:", dishId)
 
 	recordDishMetrics()
 	if wifiOk {
