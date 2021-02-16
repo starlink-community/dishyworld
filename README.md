@@ -1,6 +1,7 @@
 ## Trying it out
 
 ```
-$ go get github.com/starlink-community/cmd/starlink-exporter
-$ starlink-exporter
+$ git clone https://github.com/starlink-community/dishyworld.git
+$ cd dishyworld 
+$ go run cmd/starlink-exporter/main.go
 ```

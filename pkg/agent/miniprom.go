@@ -18,14 +18,13 @@ import (
 )
 
 type MiniProm struct {
-	logger     log.Logger
-	conf       *config.Config
-	tsdbDir    string
-	addr       string
-	remoteAddr string
+	logger  log.Logger
+	conf    *config.Config
+	tsdbDir string
+	addr    string
 }
 
-func NewMiniProm(tsdbDir string, addr string, remoteAddr string, dishId string) (*MiniProm, error) {
+func NewMiniProm(tsdbDir string, addr string, dishId string) (*MiniProm, error) {
 	ll := &promlog.AllowedLevel{}
 	ll.Set("warn")
 	s := fmt.Sprintf(`
@@ -57,11 +56,10 @@ remote_write:
 		return nil, err
 	}
 	return &MiniProm{
-		tsdbDir:    tsdbDir,
-		logger:     promlog.New(&promlog.Config{Level: ll}),
-		conf:       cfg,
-		addr:       addr,
-		remoteAddr: remoteAddr,
+		tsdbDir: tsdbDir,
+		logger:  promlog.New(&promlog.Config{Level: ll}),
+		conf:    cfg,
+		addr:    addr,
 	}, nil
 }
 func (m *MiniProm) Start() {

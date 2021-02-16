@@ -105,8 +105,9 @@ var (
 		[]string{"wedge"},
 	)
 
-	dishAddress = "192.168.100.1:9200"
-	wifiAddress = "192.168.1.1:9000"
+	dishAddress    = "192.168.100.1:9200"
+	wifiAddress    = "192.168.1.1:9000"
+	metricsAddress = "127.0.0.1:2112"
 
 	statusInterval  = time.Duration(4) * time.Minute
 	pingInterval    = time.Duration(1) * time.Minute
@@ -117,6 +118,7 @@ var (
 func init() {
 	flag.StringVar(&dishAddress, "dish_addr", dishAddress, "Dishy's address")
 	flag.StringVar(&wifiAddress, "wifi_addr", wifiAddress, "Wifi address")
+	flag.StringVar(&metricsAddress, "metrics_addr", metricsAddress, "/metrics address")
 	flag.DurationVar(&statusInterval, "status_interval", statusInterval, "Status metrics polling interval.")
 	flag.DurationVar(&pingInterval, "ping_interval", pingInterval, "Ping metrics polling interval.")
 	flag.DurationVar(&historyInterval, "history_duration", historyInterval, "Polls history this often, then replays it. This means the current metrics from history will be delayed by this amount because of the history replay, but allows us to poll less frequently. Dishy DVR!")
@@ -431,9 +433,7 @@ func main() {
 		fmt.Println("[dish] cannot run without dish, exiting... are you running from the starlink network?")
 		os.Exit(1)
 	}
-	addr := "localhost:2112"
-	remoteAddr := "localhost:9090"
-	m, err := agent.NewMiniProm("data", addr, remoteAddr, dishId)
+	m, err := agent.NewMiniProm("data", metricsAddress, dishId)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -448,6 +448,7 @@ func main() {
 	recordHistoryMetrics()
 	recordSpeedTest()
 
+	fmt.Printf("[starlink-exporter] started metrics on %s/metrics\n", metricsAddress)
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(addr, nil)
+	http.ListenAndServe(metricsAddress, nil)
 }
