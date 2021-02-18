@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/ring"
 	"context"
 	"flag"
 	"fmt"
@@ -172,18 +173,12 @@ func recordHistoryMetrics() {
 				dishSnr:                   hist.Snr,
 			}
 			wg := &sync.WaitGroup{}
+			more_sleep := 0
 			for metric, series := range allSeries {
 				wg.Add(1)
-				samples := min(current, len(series))
 				num_samples := int(historyInterval.Seconds())
-				offset := current % samples
-				orderedHistory := []float32{}
-
-				if num_samples < offset {
-					orderedHistory = series[offset-num_samples : offset]
-				} else {
-					orderedHistory = append(series[samples+offset-num_samples:samples], series[0:offset]...)
-				}
+				orderedHistory := reorderSeries(series, current, num_samples)
+				more_sleep = num_samples - len(orderedHistory)
 				go func(wg *sync.WaitGroup, metric prometheus.Gauge, orderedHistory []float32) {
 					defer wg.Done()
 					for i := 0; i < len(orderedHistory); i++ {
@@ -192,12 +187,37 @@ func recordHistoryMetrics() {
 					}
 				}(wg, metric, orderedHistory)
 			}
+			time.Sleep(time.Duration(more_sleep) * time.Second)
 			wg.Wait()
 		}
 
 	}()
 
 }
+
+func reorderSeries(series []float32, current int, parse_samples int) []float32 {
+	if parse_samples < 0 || parse_samples > len(series) {
+		parse_samples = len(series)
+	}
+	if current < parse_samples {
+		parse_samples = current + 1
+	}
+	r := ring.New(len(series))
+	for i := 0; i < len(series); i++ {
+		r.Value = series[i]
+		r = r.Next()
+	}
+	r = r.Move(current + 1)
+	r = r.Move(parse_samples * -1)
+	samples := []float32{}
+	for i := 0; i < parse_samples; i++ {
+		samples = append(samples, r.Value.(float32))
+		r = r.Next()
+	}
+	return samples
+
+}
+
 func recordPingMetrics() {
 	go func() {
 		for {
