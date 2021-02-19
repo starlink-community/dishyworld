@@ -403,40 +403,42 @@ func checkDish() (string, bool, error) {
 func recordSpeedTest() {
 	go func() {
 		for {
-			go func() {
-				user, err := speedtest.FetchUserInfo()
-				if err != nil {
-					fmt.Println("[speedtest]", err)
-					return
-				}
+			user, err := speedtest.FetchUserInfo()
+			if err != nil {
+				fmt.Println("[speedtest] disabling speedtest", err)
+				return
+			}
+			if user.Isp != "SpaceX Starlink" {
+				fmt.Println("[speedtest] disabling speedtest, got ISP:", user.Isp)
+				break
+			}
 
-				serverList, err := speedtest.FetchServerList(user)
-				if err != nil {
-					fmt.Println("[speedtest]", err)
-					return
-				}
-				targets, err := serverList.FindServer([]int{})
-				if err != nil {
-					fmt.Println("[speedtest]", err)
-					return
-				}
+			serverList, err := speedtest.FetchServerList(user)
+			if err != nil {
+				fmt.Println("[speedtest] disabling speedtest", err)
+				return
+			}
+			targets, err := serverList.FindServer([]int{})
+			if err != nil {
+				fmt.Println("[speedtest] disabling speedtest", err)
+				return
+			}
 
-				for _, s := range targets {
-					s.PingTest()
-					s.DownloadTest(false)
-					s.UploadTest(false)
+			for _, s := range targets {
+				s.PingTest()
+				s.DownloadTest(false)
+				s.UploadTest(false)
 
-					lat, _ := strconv.ParseFloat(user.Lat, 64)
-					lon, _ := strconv.ParseFloat(user.Lon, 64)
-					l := prometheus.Labels{
-						"geohash":     geohash.Encode(lat, lon),
-						"server_name": s.Name,
-					}
-					speedTestLatency.With(l).Set(float64(s.Latency.Milliseconds()))
-					speedTestUp.With(l).Set(s.ULSpeed)
-					speedTestDown.With(l).Set(s.DLSpeed)
+				lat, _ := strconv.ParseFloat(user.Lat, 64)
+				lon, _ := strconv.ParseFloat(user.Lon, 64)
+				l := prometheus.Labels{
+					"geohash":     geohash.Encode(lat, lon),
+					"server_name": s.Name,
 				}
-			}()
+				speedTestLatency.With(l).Set(float64(s.Latency.Milliseconds()))
+				speedTestUp.With(l).Set(s.ULSpeed)
+				speedTestDown.With(l).Set(s.DLSpeed)
+			}
 			time.Sleep(1 * time.Hour)
 		}
 	}()
