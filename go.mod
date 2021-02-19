@@ -1,6 +1,6 @@
 module github.com/starlink-community/dishyworld
 
-go 1.14
+go 1.16
 
 require (
 	cloud.google.com/go v0.76.0 // indirect

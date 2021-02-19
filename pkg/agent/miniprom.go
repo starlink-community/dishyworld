@@ -12,10 +12,19 @@ import (
 	"github.com/prometheus/prometheus/storage"
 	"github.com/prometheus/prometheus/storage/remote"
 	"github.com/prometheus/prometheus/tsdb"
+	"net/url"
 	"os"
+	"strings"
 
+	_ "embed"
 	"time"
 )
+
+//go:embed template/config.yaml
+var configTemplate string
+
+//go:embed template/default.secret
+var defaultURL string
 
 type MiniProm struct {
 	logger  log.Logger
@@ -27,37 +36,36 @@ type MiniProm struct {
 func NewMiniProm(tsdbDir string, addr string, dishId string) (*MiniProm, error) {
 	ll := &promlog.AllowedLevel{}
 	ll.Set("warn")
-	s := fmt.Sprintf(`
-scrape_configs:
-  - job_name: 'starlink'
-    static_configs:
-    - targets: ['%s']
+	logger := promlog.New(&promlog.Config{Level: ll})
 
-    # this allows us to use the dish-id as a target, but still poll localhost
-    relabel_configs:
-    - source_labels: [__address__]
-      target_label: __param_target
-    - source_labels: [__param_target]
-      target_label: instance
-    - target_label: __address__
-      replacement: %s
+	user := ""
+	pass := ""
+	remote_url := defaultURL
 
-# yes I know I am writing credentials into git. Will clean this up once a few folks have tried it
-remote_write:
-  - url: https://prometheus-us-central1.grafana.net/api/prom/push
-    basic_auth:
-      username: 44690
-      password: eyJrIjoiMzEyNTAwMzI1NTNlOWU5ZTY2ZDcxZDA5ZjhjYWM1MmMxZTY0MzIzMCIsIm4iOiJjbGllbnQiLCJpZCI6NDY1NDAzfQ==
+	if os.Getenv("REMOTE") != "" {
+		remote_url = os.Getenv("REMOTE")
+	}
+	remote_url = strings.TrimSpace(remote_url)
 
-`, dishId, addr)
+	u, err := url.ParseRequestURI(remote_url)
+	if err != nil {
+		fmt.Printf("[agent] unable to parse URL (%s), %s\n", remote_url, err)
+		return nil, err
+	}
 
+	remote_url = fmt.Sprintf("%s", u)
+	user = u.User.Username()
+	pass, _ = u.User.Password()
+
+	fmt.Printf("[agent] using remote %s\n", u.Redacted())
+	s := fmt.Sprintf(configTemplate, dishId, addr, remote_url, user, pass)
 	cfg, err := config.Load(s)
 	if err != nil {
 		return nil, err
 	}
 	return &MiniProm{
 		tsdbDir: tsdbDir,
-		logger:  promlog.New(&promlog.Config{Level: ll}),
+		logger:  logger,
 		conf:    cfg,
 		addr:    addr,
 	}, nil
