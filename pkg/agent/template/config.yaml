@@ -1,0 +1,25 @@
+scrape_configs:
+  - job_name: 'starlink'
+    static_configs:
+    - targets: ['%s']
+
+    # this allows us to use the dish-id as a target, but still poll localhost
+    relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: %s
+
+# yes I know I am writing credentials into git. Will clean this up once a few folks have tried it
+#remote_write:
+#  - url: https://prometheus-us-central1.grafana.net/api/prom/push
+#    basic_auth:
+#      username: 44690
+#      password: eyJrIjoiMzEyNTAwMzI1NTNlOWU5ZTY2ZDcxZDA5ZjhjYWM1MmMxZTY0MzIzMCIsIm4iOiJjbGllbnQiLCJpZCI6NDY1NDAzfQ==
+remote_write:
+  - url: %s
+    basic_auth:
+      username: %s
+      password: %s
