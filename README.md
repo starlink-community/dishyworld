@@ -2,9 +2,12 @@
 
 This project aims to make it super easy for Starlink users to discover how their Starlink installation is performing. 
 
+![dishy dashboard](../media/dishy-dashboard.png?raw=true =400x)
+
 Features:
   * Hourly speed tests using Speedtest.net
-  * Track metrics and compare against software version
+  * Highest latency remote servers from the wifi router
+  * Service wide aggregation of latency
   * Failsafes for networks with more than WAN
   * Minimal polling of your Starlink infrastructure
   * Written in golang, so very portable across Windows, Mac, and Linux
