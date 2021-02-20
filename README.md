@@ -2,7 +2,7 @@
 
 This project aims to make it super easy for Starlink users to discover how their Starlink installation is performing. 
 
-![dishy dashboard](../media/dishy-dashboard.png?raw=true =400x)
+![dishy dashboard](../media/dishy-dashboard.png?raw=true)
 
 Features:
   * Hourly speed tests using Speedtest.net
