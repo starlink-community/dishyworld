@@ -2,6 +2,9 @@ global:
   scrape_interval:     15s 
   evaluation_interval: 15s 
 
+# yes, I know what I committed here. 
+# Will clean up, but this is easiest for now.
+# this is a push-only key
 remote_write:
   - url: https://prometheus-us-central1.grafana.net/api/prom/push
     basic_auth:
