@@ -1,0 +1,9 @@
+global:
+  scrape_interval:     15s 
+  evaluation_interval: 15s 
+
+remote_write:
+  - url: https://prometheus-us-central1.grafana.net/api/prom/push
+    basic_auth:
+      username: 44690
+      password: eyJrIjoiMzEyNTAwMzI1NTNlOWU5ZTY2ZDcxZDA5ZjhjYWM1MmMxZTY0MzIzMCIsIm4iOiJjbGllbnQiLCJpZCI6NDY1NDAzfQ==
