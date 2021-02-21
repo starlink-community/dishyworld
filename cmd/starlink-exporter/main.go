@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"sync"
 	"time"
@@ -408,7 +409,8 @@ func recordSpeedTest() {
 				fmt.Println("[speedtest] disabling speedtest", err)
 				return
 			}
-			if user.Isp != "SpaceX Starlink" {
+			r := regexp.MustCompile("(?i)starlink")
+			if !r.MatchString(user.Isp) {
 				fmt.Println("[speedtest] disabling speedtest, got ISP:", user.Isp)
 				return
 			}
