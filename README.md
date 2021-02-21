@@ -60,7 +60,6 @@ If you would like to monitor with your own prometheus instance, you can run just
 ```
 $ go build -o starlink-exporter cmd/starlink-exporter/main.go
 $ ./starlink-exporter -h
-$ ./starlink-exporter -h
 Usage of ./starlink-exporter:
   -dish_addr string
     	Dishy's address (default "192.168.100.1:9200")
@@ -79,19 +78,19 @@ Usage of ./starlink-exporter:
 
 By default `http://localhost:2112/metrics` will be available for your promethues to poll. 
 
-## Running on RasberryPi
+## Running on Raspberry Pi
 
-Currently we do not have pre-packaged binaries, but it is very easy to compile to run on RasberryPI. 
+Currently we do not have pre-packaged binaries, but it is very easy to compile to run on Raspberry Pi.
 
 ```
 $ GOOS=linux GOARCH=arm go build -o starlink-exporter cmd/starlink-exporter/main.go
 ```
 
-The binary is now available at `./starlink-exporter` for your pi. 
+The binary is now available at `./starlink-exporter` to be copied to your pi. 
 
 ## systemd
 
-RasberryPI and many other systems commonly use systemd, so here is an example if you are using your own compiled binaries. 
+Raspberry Pi and many other systems commonly use systemd, so here is an example if you are using your own compiled binaries. 
 
 ```
 $ cat /etc/systemd/system/starlink-exporter.service 
