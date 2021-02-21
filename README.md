@@ -22,7 +22,7 @@ If you would prefer to just have a dashboard, without all the customization feat
 The following will bring up the starlink-exporter agent, prometheus, and grafana with a default dashboard. 
 
 ```
-$ docker-compose -f configs/docker-compose/compose.yml up
+$ docker-compose -f configs/docker-compose/compose.yml up -d
 ```
 
 ## Viewing Grafana
@@ -36,6 +36,15 @@ Prometheus is available on `localhost:9090`.
 ## Data sharing
 
 By default, the quickstart setup will share anonymized metrics back to the project. The goal is to be able to provide a global view of how Starlink is performing, and allow end users to see how thier setup compares to the global deployment. This can be disabled by using the development instructions. 
+
+## Upgrading
+
+Pull the new image and restart the containers.
+
+```
+$ docker-compose -f configs/docker-compose/compose.yml pull
+$ docker-compose -f configs/docker-compose/compose.yml restart
+```
 
 # Development in docker
 
