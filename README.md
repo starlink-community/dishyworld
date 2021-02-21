@@ -27,7 +27,7 @@ $ docker-compose -f configs/docker-compose/compose.yml up
 
 ## Viewing Grafana
 
-Navigate to `localhost:3000`. The default grafana username and password is `admin`. From there, click on the dashboard "Dishy". 
+The default grafana username and password is `admin`. The dashboard will be available at http://localhost:3000/d/dishy/dishy
 
 ## Prometheus
 
