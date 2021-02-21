@@ -1,17 +1,21 @@
 # Welcome
 
-This project aims to make it super easy for Starlink users to discover how their Starlink installation is performing. 
+This project aims to make it super easy for Starlink users to discover how their Starlink installation is performing. It is intended for Starlink customers that would like to customize their own dashboard. You will need to be comfortable with prometheus metrics and grafana in order to customize the dashboard.
 
 ![dishy dashboard](../media/dishy-dashboard.png?raw=true)
 
 Features:
   * Hourly speed tests using Speedtest.net
+  * Easily customizable with Grafana
+  * Prometheus available for ad-hoc queries
   * Highest latency remote servers from the wifi router
   * Service wide aggregation of latency
   * Failsafes for networks with more than WAN
   * Minimal polling of your Starlink infrastructure
   * Written in golang, so very portable across Windows, Mac, and Linux
   * Utilizes Starlink native GRPC APIs
+
+If you would prefer to just have a dashboard, without all the customization features, the official dashboard can be found in the Starlink App or on the dish itself at http://192.168.100.1/support/statistics
 
 ## Quickstart
 
