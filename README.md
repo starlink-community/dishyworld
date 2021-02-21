@@ -52,3 +52,75 @@ $ git clone https://github.com/starlink-community/dishyworld.git
 $ cd dishyworld 
 $ go run cmd/starlink-exporter/main.go
 ```
+
+# Running just the exporter, BYO Prometheus
+
+If you would like to monitor with your own prometheus instance, you can run just the exporter by following the development instructions, then running the agent:
+
+```
+$ go build -o starlink-exporter cmd/starlink-exporter/main.go
+$ ./starlink-exporter -h
+$ ./starlink-exporter -h
+Usage of ./starlink-exporter:
+  -dish_addr string
+    	Dishy's address (default "192.168.100.1:9200")
+  -history_duration duration
+    	Polls history this often, then replays it. This means the current metrics from history will be delayed by this amount because of the history replay, but allows us to poll less frequently. Dishy DVR! (default 2m0s)
+  -metrics_addr string
+    	/metrics address (default "127.0.0.1:2112")
+  -ping_interval duration
+    	Ping metrics polling interval. (default 1m0s)
+  -status_interval duration
+    	Status metrics polling interval. (default 4m0s)
+  -wifi_addr string
+    	Wifi address (default "192.168.1.1:9000")
+...
+```
+
+By default `http://localhost:2112/metrics` will be available for your promethues to poll. 
+
+## Running on RasberryPi
+
+Currently we do not have pre-packaged binaries, but it is very easy to compile to run on RasberryPI. 
+
+```
+$ GOOS=linux GOARCH=arm go build -o starlink-exporter cmd/starlink-exporter/main.go
+```
+
+The binary is now available at `./starlink-exporter` for your pi. 
+
+## systemd
+
+RasberryPI and many other systems commonly use systemd, so here is an example if you are using your own compiled binaries. 
+
+```
+$ cat /etc/systemd/system/starlink-exporter.service 
+[Unit]
+Description=starlink-exporter
+After=network-online.target
+
+[Service]
+# choose your own path
+ExecStart=/home/pi/bin/starlink-exporter 
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable the exporter to start at boot, and start it the first time. 
+
+```
+$ systemctl enable starlink-exporter
+$ systemctl start starlink-exporter
+$ systemctl status starlink-exporter
+● starlink-exporter.service - starlink-exporter
+   Loaded: loaded (/home/pi/systemd/starlink-exporter.service; enabled; vendor preset: enabled)
+   Active: active (running) since Sun 2021-02-21 04:01:16 UTC; 11min ago
+ Main PID: 18907 (starlink-export)
+   CGroup: /system.slice/starlink-exporter.service
+           └─18907 /home/pi/bin/starlink-exporter
+
+Feb 21 04:01:16 piaware systemd[1]: Started starlink-exporter.
+...
+```
