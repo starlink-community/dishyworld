@@ -410,7 +410,7 @@ func recordSpeedTest() {
 			}
 			if user.Isp != "SpaceX Starlink" {
 				fmt.Println("[speedtest] disabling speedtest, got ISP:", user.Isp)
-				break
+				return
 			}
 
 			serverList, err := speedtest.FetchServerList(user)
