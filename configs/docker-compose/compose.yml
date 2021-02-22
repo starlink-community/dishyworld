@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   starlink-exporter:
-    image: "gcr.io/starlink-community/starlink-exporter"
+    image: "gcr.io/starlink-community/starlink-exporter:latest"
     environment:
             REMOTE: "http://prometheus:9090/api/v1/write"
   prometheus:
